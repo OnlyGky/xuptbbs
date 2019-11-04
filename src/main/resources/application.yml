@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url:
+    username:
+    password:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource #数据源类型
+#    schema: classpath:db/data_init.sql
+#    initialization-mode: always
+
+redis:
+  host: localhost
+  port: 6379
+
+rabbitmq:
+  host: localhost
+  port: 5672
+  username:
+  password:
+  publisher-confirms: true
+  virtual-host: /
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.art.xuptbbs.model
+  type-handlers-package: com.art.xuptbbs.mapper.typehandler
+  configuration:
+    map-underscore-to-camel-case: true  # 开启驼峰命名
+
+logging:
+  level:
+    com.art.xuptbbs.mapper.*: debug
+
+

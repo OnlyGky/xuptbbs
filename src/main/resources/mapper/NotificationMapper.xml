@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.NotificationMapper">
+    <resultMap id="NotificationResult" type="com.art.xuptbbs.model.Notification">
+        <id column="id" property="id"/>
+        <result column="type" property="type"/>
+        <result column="reference_id" property="referenceId"/>
+        <result column="summary" property="summary"/>
+        <!--<result column="content" property="content"/>-->
+        <result column="be_read" property="beRead"/>
+        <!--<result column="from_user_id" property="fromUserId"/>-->
+        <!--<result column="to_user_id" property="toUserId"/>-->
+        <result column="last_modified" property="lastModified"/>
+        <association property="user" javaType="com.art.xuptbbs.model.User">
+            <id column="id" property="id"/>
+            <result column="nickname" property="nickname"/>
+            <result column="avatar_url" property="avatarUrl"/>
+        </association>
+    </resultMap>
+
+    <select id="selectNotification" resultMap="NotificationResult">
+        select notification.id, notification.type, notification.reference_id, notification.summary, notification.be_read,
+        notification.last_modified, user.id, user.nickname, user.avatar_url from notification join user on user.id = notification.from_user_id
+        where to_user_id = #{id} order by notification.last_modified desc
+    </select>
+
+    <select id="selectNotificationDetail" resultMap="NotificationResult">
+        select notification.id, notification.type, notification.reference_id, notification.summary, notification.be_read,
+        notification.last_modified, user.id, user.nickname, user.avatar_url from notification join user on user.id = notification.from_user_id
+        where notification.id = #{id}
+    </select>
+
+    <delete id="deleteNotification">
+        delete from notification where id = #{id}
+    </delete>
+
+    <update id="updateBeRead">
+        update notification set be_read = 1 where id = #{id}
+    </update>
+
+    <insert id="saveNotification">
+        insert into notification(`type`, reference_id, summary,  from_user_id, to_user_id, created_at,
+        last_modified) values (#{type}, #{referenceId}, #{summary}, #{fromUserId}, #{toUserId}, #{createdAt}, #{lastModified})
+    </insert>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.PostTopicMapper">
+    <resultMap id="BaseMap" type="com.art.xuptbbs.model.PostTopic">
+        <id column="id" property="id"/>
+        <result column="post_id" property="postId"/>
+        <result column="topic" property="topic"/>
+    </resultMap>
+
+    <insert id="saveTopic">
+        insert into post_topic (post_id, topic)
+        values (#{postId}, #{topic})
+    </insert>
+
+    <select id="selectTopic" resultMap="BaseMap">
+        select * from post_topic
+    </select>
+
+    <select id="selectOneTopic" resultType="string">
+        select post_topic.topic from post_topic where post_id = #{id}
+    </select>
+</mapper>

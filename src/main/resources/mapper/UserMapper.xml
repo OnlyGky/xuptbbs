@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.UserMapper">
+    <insert id="insert">
+        insert into user (id, nickname, avatar_url, last_login_at, created_at) values
+        (#{id}, #{nickname}, #{avatarUrl}, #{lastLoginAt}, #{createdAt})
+    </insert>
+
+    <update id="uploadPhoto">
+        update user set avatar_url = #{avatarUrl} where id = #{userId};
+    </update>
+
+    <select id="selectById" resultType="User">
+        select *
+        from user
+        where id = #{id}
+    </select>
+
+    <update id="updateUserProfile">
+        update user
+        <set>
+            <if test="nickname !=null">
+                nickname = #{nickname},
+            </if>
+            <if test="major !=null">
+                major = #{major},
+            </if>
+            <if test="grade != null">
+                grade = #{grade}
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <select id="checkSameName" resultType="string">
+        select user.id from user where nickname = #{nickname} and id != #{id}
+    </select>
+
+    <select id="selectName" resultType="string">
+        select user.nickname from user;
+    </select>
+</mapper>

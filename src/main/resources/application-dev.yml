@@ -1,0 +1,5 @@
+image:
+  avatarUploadFolder: /usr/local/runjar/images/avatar/
+  postUploadFolder: /usr/local/runjar/images/post/
+  avatarImagePath: /images/avatar/**
+  postImagePath: /images/post/**

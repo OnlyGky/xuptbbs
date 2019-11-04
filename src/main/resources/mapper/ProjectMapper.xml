@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.ProjectMapper">
+<resultMap id="BaseProject" type="com.art.xuptbbs.model.Project" autoMapping="true">
+    <id column="id" property="id"/>
+    <result column="user_id" property="userId"/>
+    <result column="title" property="title"/>
+    <result column="project_content" property="projectContent"/>
+    <!--<result column="partner_content" property="partnerContent"/>-->
+    <result column="conpensation" property="conpensation"/>
+    <result column="type" property="type"/>
+    <result column="last_modified" property="lastModified"/>
+    <result column="`deleted`" property="deleted"/>
+    <association property="user" javaType="com.art.xuptbbs.model.User">
+        <id column="id" property="id"/>
+        <result column="nickname" property="nickname"/>
+        <result column="avatar_url" property="avatarUrl"/>
+        <result column="major" property="major"/>
+        <result column="grade" property="grade"/>
+    </association>
+    <collection property="label" ofType="com.art.xuptbbs.model.ProjectLabel">
+        <id column="pid" property="id"/>
+        <result column="project_id" property="projectId"/>
+        <result column="label" property="label"/>
+    </collection>
+</resultMap>
+
+
+    <insert id="createProject" useGeneratedKeys="true" keyProperty="id">
+        insert into project(user_id, title, project_content,
+        conpensation, `type`, created_at, last_modified)
+        values (#{userId}, #{title}, #{projectContent}, #{conpensation},
+        #{type}, #{createdAt}, #{lastModified})
+    </insert>
+
+    <select id="getProject" resultMap="BaseProject">
+        select project.id, user_id, title, project_content,  conpensation, `type`,
+        project.last_modified, project.deleted,  user.id ,user.nickname, user.avatar_url, user.major, user.grade,
+        project_label.id as pid, project_label.project_id, project_label.label from project join user
+        on user.id = project.user_id left join project_label on project.id = project_label.project_id
+        and project.deleted = 0
+        where project.id = #{id} order by project.last_modified desc
+    </select>
+
+    <select id="getAllProject" resultMap="BaseProject">
+        select project.id, user_id, title, project_content,  conpensation, `type`,
+        project.last_modified, project.deleted,  user.id ,user.nickname, user.avatar_url, user.major, user.grade,
+        project_label.id as pid, project_label.project_id, project_label.label from project join user
+        on user.id = project.user_id left join project_label on project.id = project_label.project_id
+        and project.deleted = 0
+        order by project.last_modified desc
+    </select>
+
+    <select id="getTypeProject" resultMap="BaseProject">
+        select project.id, user_id, title, project_content,  conpensation, `type`,
+        project.last_modified, project.deleted,  user.id ,user.nickname, user.avatar_url, user.major, user.grade,
+        project_label.id as pid, project_label.project_id, project_label.label from project join user
+        on user.id = project.user_id left join project_label on project.id = project_label.project_id
+        where project.type = #{id} and project.deleted = 0
+        order by project.last_modified desc
+    </select>
+
+    <select id="GetMyProject" resultMap="BaseProject">
+        select project.id, user_id, title, project_content, conpensation, `type`,
+        project.last_modified, project.deleted,  user.id ,user.nickname, user.avatar_url, user.major, user.grade,
+        project_label.id as pid, project_label.project_id, project_label.label from project join user
+        on user.id = project.user_id left join project_label on project.id = project_label.project_id
+        where project.user_id = #{id} and project.deleted = 0
+        order by project.last_modified desc
+    </select>
+</mapper>

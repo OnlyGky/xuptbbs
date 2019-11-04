@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.UserSercetMapper">
+
+    <insert id="insert">
+        insert into user_sercet (id, user_id, email, password, created_at, last_modified, deleted)
+        values (#{id}, #{userId}, #{email}, #{password}, #{createdAt}, #{lastModified}, #{deleted})
+    </insert>
+
+    <update id="updatePassword">
+        update user_sercet set password = #{newPassword} where user_id = #{userId} and password = #{oldPassword};
+    </update>
+
+    <select id="loginByEmail" resultType="User">
+        select * from user join user_sercet where email = #{email} and password = #{password} and user.id = user_sercet.user_id
+    </select>
+
+    <select id="loginByName" resultType="User">
+        select * from user join user_sercet where user.nickname = #{name} and user_sercet.password = #{password}
+        and user.id = user_sercet.user_id
+    </select>
+
+    <select id="checkSame" resultType="string">
+        select user.id from user join user_sercet where user.nickname = #{name} and
+        user_sercet.email = #{email} and user.id = user_sercet.user_id
+    </select>
+
+    <select id="selectEmailById" resultType="string">
+        select user_sercet.email from user_sercet where user_sercet.user_id = #{id}
+    </select>
+
+    <update id="updatePasswordWithOutLogin" >
+        update user_sercet set user_sercet.password = #{password} where user_sercet.email = #{email}
+    </update>
+
+    <select id="selectemail" resultType="string">
+        select email from user_sercet;
+    </select>
+</mapper>

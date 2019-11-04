@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.AnswerLikeMapper">
+    <select id="selectAnswerIdByUserId" resultType="long">
+        select answer_id from answer_like where user_id = #{id}
+    </select>
+
+    <insert id="saveLike">
+         insert into answer_like(answer_id, user_id, created_at)
+        values (#{answerId}, #{userId}, #{createdAt})
+    </insert>
+
+    <delete id="cancelLike">
+        delete from answer_like where answer_id = #{answerId} and user_id = #{userId}
+    </delete>
+
+</mapper>

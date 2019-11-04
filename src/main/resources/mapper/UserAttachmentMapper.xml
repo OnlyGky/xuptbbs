@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.UserAttachmentMapper">
+
+
+    <select id="selectMyfans" resultType="User">
+        select * from user where user.id in (select from_user_id from user_attachment where to_user_id = #{id})
+    </select>
+
+    <select id="selectfollow" resultType="User">
+        select * from user where user.id in (select to_user_id from user_attachment where from_user_id = #{id})
+    </select>
+
+    <select id = "selectFollowNum" resultType="map">
+        select count(from_user_id = #{id} or null) as follow,
+        count(to_user_id = #{id} or null) as fans
+         from user_attachment;
+    </select>
+
+    <insert id="createUserAttachment">
+        insert into user_attachment(from_user_id, to_user_id, created_at)
+        values (#{fromUserId}, #{toUserId}, #{createdAt})
+    </insert>
+
+    <delete id="deleteFollow">
+        delete from user_attachment where from_user_id = #{fromUserId} and to_user_id = #{toUserId}
+    </delete>
+</mapper>

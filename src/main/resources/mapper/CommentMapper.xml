@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.CommentMapper">
+
+    <resultMap id="CommentMapper" type="com.art.xuptbbs.model.Comment">
+        <id column="cid" property="id"/>
+        <result column="content" property="content"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="last_modified" property="lastActiveAt"/>
+        <association property="user" javaType="com.art.xuptbbs.model.User">
+            <id column="uid" property="id"/>
+            <result column="nickname" property="nickname"/>
+            <result column="avatar_url" property="avatarUrl"/>
+        </association>
+    </resultMap>
+
+
+
+    <select id="selectCommentById" resultMap="CommentMapper">
+        select comment.id as cid, comment.content, comment.parent_id, comment.last_modified,
+         user.id as uid, user.nickname, user.avatar_url from comment ,`user`
+         where comment.parent_id = 0 and comment.user_id =user.id and
+         comment.post_id = #{id} and comment.deleted = 0 order by comment.last_modified desc
+    </select>
+
+    <select id="getSonComment" resultMap="CommentMapper">
+        select comment.id as cid, comment.content, comment.parent_id, comment.last_modified,
+         user.id as uid, user.nickname, user.avatar_url from comment ,`user`
+         where comment.user_id =user.id and
+         comment.parent_id = #{id} and comment.deleted = 0 order by comment.last_modified desc
+    </select>
+
+    <insert id="createComment" keyProperty="id" useGeneratedKeys="true">
+        insert into comment(content, parent_id, post_id, user_id, created_at, last_modified)
+        values (#{content}, #{parentId}, #{postId}, #{userId}, #{createdAt}, #{lastActiveAt})
+    </insert>
+
+    <update id="deleteComment">
+        update comment set deleted = 1 where id =#{id} and user_id = #{userId}
+    </update>
+</mapper>

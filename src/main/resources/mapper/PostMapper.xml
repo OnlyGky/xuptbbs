@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.PostMapper">
+    <resultMap id="postResult" type="com.art.xuptbbs.model.Post" autoMapping="true">
+        <id column="postid" property="id"/>
+        <result column="user_id" property="userId" />
+        <result column="title" property="title"/>
+        <result column="board" property="board"/>
+        <result column="classification" property="classification"/>
+        <result column="content" property="content" javaType="string"/>
+        <result column="looked" property="looked"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="join_count"  property="joinCount"/>
+        <result column="created_at" property="createdAt" javaType="java.time.LocalDateTime"/>
+        <result column="last_active_at" property="lastActiveAt" javaType="java.time.LocalDateTime"/>
+        <result column="deleted" property="deleted"/>
+        <association property="user" javaType="com.art.xuptbbs.model.User">
+            <id column="id" property="id"/>
+            <result column="nickname" property="nickname"/>
+            <result column="avatar_url" property="avatarUrl"/>
+        </association>
+    </resultMap>
+    <resultMap id="postResultMap" type="com.art.xuptbbs.model.Post" autoMapping="true" extends="postResult">
+        <collection property="path" javaType="ArrayList" ofType="string">
+            <result column="path" property="path"/>
+        </collection>
+    </resultMap>
+
+    <insert id="createPost" useGeneratedKeys="true" keyProperty="id">
+        insert into post (user_id, title, board, classification, content, created_at, last_active_at)
+        values (#{userId}, #{title}, #{board.value}, #{classification.value}, #{content}, #{createdAt}, #{lastActiveAt})
+    </insert>
+
+    <select id="selectByBoard" resultMap="postResultMap">
+      select post.id as postid, user_id, title, board, classification, content,looked, like_count, join_count, post.created_at, post.last_active_at, post.deleted, path,
+      user.id, user.nickname, user.avatar_url from post join user on user.id = post.user_id
+      left join post_photo on post.id = post_photo.post_id where post.board = #{board} and post.deleted = 0
+      order by post.last_active_at desc
+    </select>
+
+    <select id="selectPostDetail" resultMap="postResultMap">
+        select post.id as postid, user_id, title, board, classification, content, looked, like_count, join_count, post.created_at, post.last_active_at, post.deleted, path,
+      user.id, user.nickname, user.avatar_url from post join user on user.id = post.user_id
+      left join post_photo on post.id = post_photo.post_id where post.id = #{id} and post.deleted = 0
+      order by post.last_active_at desc
+    </select>
+
+    <select id="selectPostByCassification" resultMap="postResultMap">
+         select post.id as postid, user_id, title, board, classification, content,looked, like_count, join_count, post.created_at, post.last_active_at, post.deleted, path,
+      user.id, user.nickname, user.avatar_url from post join user on user.id = post.user_id
+      left join post_photo on post.id = post_photo.post_id where post.classification = #{classification} and post.deleted = 0
+      order by post.last_active_at desc
+    </select>
+
+    <select id="selectMyPost" resultMap="postResult">
+        select post.id as postid, user_id, title, board, classification, content,looked, like_count, join_count, post.created_at, post.last_active_at, post.deleted, path,
+      user.id, user.nickname, user.avatar_url from post join user on user.id = post.user_id
+      left join post_photo on post.id = post_photo.post_id where post.user_id = #{id} and post.deleted = 0
+      order by post.last_active_at desc
+    </select>
+
+    <select id="selectMyquestion" resultMap="postResult">
+         select post.id as postid, user_id, title, board, classification, content,looked, like_count, join_count, post.created_at, post.last_active_at, post.deleted, path,
+      user.id, user.nickname, user.avatar_url from post join user on user.id = post.user_id
+      left join post_photo on post.id = post_photo.post_id where post.user_id = #{id} and board = 2 and post.deleted = 0
+      order by post.last_active_at desc
+    </select>
+
+    <update id="deletePost">
+        update post set deleted = 1 where id = #{id}
+    </update>
+
+    <update id="updatePost">
+        update post set title = #{title}, content = #{content},
+         last_active_at = #{lastActiveAt} where id = #{id}
+    </update>
+
+    <update id="increateLikeCount">
+        update post set like_count = like_count+1 where id = #{postId}
+    </update>
+
+    <update id="decreaseLikeCount">
+        update post set like_count = like_count-1 where id = #{postId} and like_count > 0
+    </update>
+
+    <update id="increateJoinCount">
+        update post set join_count = join_count+1 where id = #{postId}
+    </update>
+
+    <update id="decreaseJoinCount">
+        update post set join_count = join_count-1 where id = #{postId} and like_count > 0
+    </update>
+
+    <update id="incermentLook">
+        update post set looked = looked+1 where id = #{postId}
+    </update>
+
+    <select id="selectMyCollection" resultMap="postResult">
+        select post.id as postid, user_id, title, board, classification, content,looked, like_count, join_count, post.created_at, post.last_active_at, post.deleted, path,
+      user.id, user.nickname, user.avatar_url from post join user on user.id = post.user_id
+      left join post_photo on post.id = post_photo.post_id where post.id in
+      (select post_id from post_collection where post_collection.user_id = #{id})
+      and post.deleted = 0
+      order by post.last_active_at desc
+    </select>
+</mapper>

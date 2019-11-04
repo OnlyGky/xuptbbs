@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.AnswerMapper">
+    <resultMap id="AnswerMap" type="com.art.xuptbbs.model.Answer">
+        <id column="id" property="id"/>
+        <result column="question_id" property="questionId"/>
+        <result column="user_id" property="userId"/>
+        <result column="content" property="content"/>
+        <result column="like_count" property="likeCount"/>
+        <result column="comment_count"  property="commentCount"/>
+        <result column="created_at" property="createdAt"/>
+        <result column="last_modified" property="lastModified"/>
+        <result column="deleted" property="deleted"/>
+        <association property="user" javaType="com.art.xuptbbs.model.User">
+            <id column="id" property="id"/>
+            <result column="nickname" property="nickname"/>
+            <result column="avatar_url" property="avatarUrl"/>
+        </association>
+    </resultMap>
+
+    <insert id="createAnswer" useGeneratedKeys="true" keyProperty="id">
+        insert into answer (question_id, user_id, content, created_at, last_modified)
+        values (#{questionId}, #{userId}, #{content}, #{createdAt}, #{lastModified})
+    </insert>
+
+
+    <select id="selectAnswerById" resultMap="AnswerMap">
+        SELECT answer.id, answer.question_id, answer.user_id, answer.content, answer.like_count, answer.comment_count,
+        answer.last_modified, user.id, user.nickname, user.avatar_url
+        from answer join user on user.id = answer.user_id where answer.question_id = #{id} and answer.deleted = 0
+    </select>
+
+    <delete id="deleteAnswer">
+        update answer set deleted = 1 where id = #{id} and user_id = #{userId}
+    </delete>
+
+    <update id="increateLikeCount">
+        update answer set like_count = like_count+1 where id = #{answerId}
+    </update>
+
+
+    <update id="decreaseLikeCount">
+        update answer set like_count = like_count-1 where id = #{answerId} and like_count > 0
+    </update>
+
+    <update id="increateCommentCount">
+        update answer set comment_count = comment_count+1 where id = #{answerId}
+    </update>
+
+    <update id="decreaseCommentCount">
+        update answer set deleted = 1 where id = #{id}
+    </update>
+</mapper>

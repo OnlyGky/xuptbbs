@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.art.xuptbbs.mapper.AnswerCommentMapper">
+    <resultMap id="CommentAnswerMap" type="com.art.xuptbbs.model.AnswerComment">
+        <id column="cid" property="id"/>
+        <result column="content" property="content"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="answer_id" property="answerId"/>
+        <result column="last_modified" property="lastModified"/>
+        <association property="user" javaType="com.art.xuptbbs.model.User">
+            <id column="uid" property="id"/>
+            <result column="nickname" property="nickname"/>
+            <result column="avatar_url" property="avatarUrl"/>
+        </association>
+    </resultMap>
+
+
+    <select id="getParentAnswerComment" resultMap="CommentAnswerMap">
+        select answer_comment.id as cid, answer_comment.content, answer_comment.parent_id,
+        answer_comment.answer_id, answer_comment.last_modified,
+         user.id as uid, user.nickname, user.avatar_url from answer_comment ,`user`
+         where answer_comment.user_id =user.id and
+         answer_comment.parent_id = 0  and answer_comment.deleted = 0 and answer_id = #{id}
+         order by answer_comment.last_modified desc
+    </select>
+
+    <select id="getSonAnswerComment" resultMap="CommentAnswerMap">
+        select answer_comment.id as cid, answer_comment.content, answer_comment.parent_id,
+        answer_comment.answer_id, answer_comment.last_modified,
+         user.id as uid, user.nickname, user.avatar_url from answer_comment ,`user`
+         where answer_comment.user_id =user.id and
+         answer_comment.parent_id = #{id} and answer_comment.deleted = 0 order by answer_comment.last_modified desc
+    </select>
+
+    <insert id="createAnswerComment" keyProperty="id" useGeneratedKeys="true">
+        insert into answer_comment(content, post_id, parent_id, answer_id, user_id, created_at, last_modified)
+        values (#{content}, #{postId}, #{parentId}, #{answerId}, #{userId}, #{createdAt}, #{lastModified})
+    </insert>
+
+    <update id="deleteAnswerComment">
+        update answer_comment set deleted = 1 where id = #{id} and user_id = #{userId}
+    </update>
+
+
+</mapper>
